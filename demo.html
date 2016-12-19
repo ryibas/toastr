@@ -13,7 +13,7 @@
     </style>
 </head>
 
-<body class="container">
+<body class="container" onload="init();">
 <section class="row">
     <h1>toastr</h1>
 
@@ -188,7 +188,7 @@
 <script src="toastr.js"></script>
 
 <script type="text/javascript">
-    $(function () {
+    function init() {
         var i = -1;
         var toastCount = 0;
         var $toastlast;
@@ -215,83 +215,88 @@
             return msg;
         };
 
-        $('#closeButton').click(function() {
-            if($(this).is(':checked')) {
-                $('#addBehaviorOnToastCloseClick').prop('disabled', false);
-            } else {
-                $('#addBehaviorOnToastCloseClick').prop('disabled', true);
-                $('#addBehaviorOnToastCloseClick').prop('checked', false);
-            }
-        });
+        document.getElementById('closeButton').onclick = function closeButtonClick() {
+            console.log(closeButton);
 
-        $('#showtoast').click(function () {
-            var shortCutFunction = $("#toastTypeGroup input:radio:checked").val();
-            var msg = $('#message').val();
-            var title = $('#title').val() || '';
-            var $showDuration = $('#showDuration');
-            var $hideDuration = $('#hideDuration');
-            var $timeOut = $('#timeOut');
-            var $extendedTimeOut = $('#extendedTimeOut');
-            var $showEasing = $('#showEasing');
-            var $hideEasing = $('#hideEasing');
-            var $showMethod = $('#showMethod');
-            var $hideMethod = $('#hideMethod');
+            var addBehaviorOnToastCloseClick = document.getElementById('addBehaviorOnToastCloseClick');
+
+            if(closeButton.checked) {
+                addBehaviorOnToastCloseClick.disabled = false;
+            } else {
+                addBehaviorOnToastCloseClick.disabled = true;
+                addBehaviorOnToastCloseClick.checked = false;
+            }
+        }
+
+        document.getElementById('showtoast').onclick = function showToastClick() {
+
+            var shortCutFunction = document.querySelector('#toastTypeGroup input[checked]').value; // TODO - fix this... $("#toastTypeGroup input:radio:checked").val();
+            var msg = document.getElementById('message').value; // $('#message').val(); 'input[name = "gender"]:checked').
+            var title = document.getElementById('title').value; // $('#title').val() || '';
+            var $showDuration =  document.getElementById('showDuration'); // $('#showDuration');
+            var $hideDuration = document.getElementById('hideDuration'); //$('#hideDuration');
+            var $timeOut = document.getElementById('timeOut'); // $('#timeOut');
+            var $extendedTimeOut = document.getElementById('extendedTimeOut'); // $('#extendedTimeOut');
+            var $showEasing = document.getElementById('showEasing'); // $('#showEasing');
+            var $hideEasing = document.getElementById('hideEasing'); // $('#hideEasing');
+            var $showMethod = document.getElementById('showMethod'); // $('#showMethod');
+            var $hideMethod = document.getElementById('hideMethod'); // $('#hideMethod');
             var toastIndex = toastCount++;
-            var addClear = $('#addClear').prop('checked');
+            var addClear = document.getElementById('addClear').checked; // $('#addClear').prop('checked');
 
             toastr.options = {
-                closeButton: $('#closeButton').prop('checked'),
-                debug: $('#debugInfo').prop('checked'),
-                newestOnTop: $('#newestOnTop').prop('checked'),
-                progressBar: $('#progressBar').prop('checked'),
-                rtl: $('#rtl').prop('checked'),
-                positionClass: $('#positionGroup input:radio:checked').val() || 'toast-top-right',
-                preventDuplicates: $('#preventDuplicates').prop('checked'),
+                closeButton: document.getElementById('closeButton').checked, // $('#closeButton').prop('checked'),
+                debug: document.getElementById('debugInfo').checked, // $('#debugInfo').prop('checked'),
+                newestOnTop: document.getElementById('newestOnTop').checked, // $('#newestOnTop').prop('checked'),
+                progressBar: document.getElementById('progressBar').checked, // $('#progressBar').prop('checked'),
+                rtl: document.getElementById('rtl').checked, // $('#rtl').prop('checked'),
+                positionClass: document.getElementById('positionGroup').checked, // TODO - fix this... $('#positionGroup input:radio:checked').val() || 'toast-top-right',
+                preventDuplicates: document.getElementById('preventDuplicates').checked, // $('#preventDuplicates').prop('checked'),
                 onclick: null
             };
 
-            if ($('#addBehaviorOnToastClick').prop('checked')) {
+            if (document.getElementById('addBehaviorOnToastClick').checked) {
                 toastr.options.onclick = function () {
                     alert('You can perform some custom action after a toast goes away');
                 };
             }
 
-            if ($('#addBehaviorOnToastCloseClick').prop('checked')) {
+            if (document.getElementById('addBehaviorOnToastCloseClick').checked) {
                 toastr.options.onCloseClick = function () {
                     alert('You can perform some custom action when the close button is clicked');
                 };
             }
 
-            if ($showDuration.val().length) {
-                toastr.options.showDuration = parseInt($showDuration.val());
+            if ($showDuration.value.length) {
+                toastr.options.showDuration = parseInt($showDuration.value);
             }
 
-            if ($hideDuration.val().length) {
-                toastr.options.hideDuration = parseInt($hideDuration.val());
+            if ($hideDuration.value.length) {
+                toastr.options.hideDuration = parseInt($hideDuration.value);
             }
 
-            if ($timeOut.val().length) {
-                toastr.options.timeOut = addClear ? 0 : parseInt($timeOut.val());
+            if ($timeOut.value.length) {
+                toastr.options.timeOut = addClear ? 0 : parseInt($timeOut.value);
             }
 
-            if ($extendedTimeOut.val().length) {
-                toastr.options.extendedTimeOut = addClear ? 0 : parseInt($extendedTimeOut.val());
+            if ($extendedTimeOut.value.length) {
+                toastr.options.extendedTimeOut = addClear ? 0 : parseInt($extendedTimeOut.value);
             }
 
-            if ($showEasing.val().length) {
-                toastr.options.showEasing = $showEasing.val();
+            if ($showEasing.value.length) {
+                toastr.options.showEasing = $showEasing.value;
             }
 
-            if ($hideEasing.val().length) {
-                toastr.options.hideEasing = $hideEasing.val();
+            if ($hideEasing.value.length) {
+                toastr.options.hideEasing = $hideEasing.value;
             }
 
-            if ($showMethod.val().length) {
-                toastr.options.showMethod = $showMethod.val();
+            if ($showMethod.value.length) {
+                toastr.options.showMethod = $showMethod.value;
             }
 
-            if ($hideMethod.val().length) {
-                toastr.options.hideMethod = $hideMethod.val();
+            if ($hideMethod.value.length) {
+                toastr.options.hideMethod = $hideMethod.value;
             }
 
             if (addClear) {
@@ -302,14 +307,13 @@
                 msg = getMessage();
             }
 
-            $('#toastrOptions').text('Command: toastr["'
+            document.getElementById('toastrOptions').value = 'Command: toastr["'
                     + shortCutFunction
                     + '"]("'
                     + msg
                     + (title ? '", "' + title : '')
                     + '")\n\ntoastr.options = '
-                    + JSON.stringify(toastr.options, null, 2)
-            );
+                    + JSON.stringify(toastr.options, null, 2);
 
             var $toast = toastr[shortCutFunction](msg, title); // Wire up an event handler to a button in the toast, if it exists
             $toastlast = $toast;
@@ -334,18 +338,20 @@
                     toastr.clear($toast, { force: true });
                 });
             }
-        });
+        }
 
         function getLastToast(){
             return $toastlast;
         }
-        $('#clearlasttoast').click(function () {
+
+        document.getElementById('clearlasttoast').onclick = function () {
             toastr.clear(getLastToast());
-        });
-        $('#cleartoasts').click(function () {
+        }
+
+        document.getElementById('cleartoasts').onclick = function () {
             toastr.clear();
-        });
-    })
+        };
+    }
 </script>
 </body>
 </html>
