@@ -7,8 +7,10 @@
  * conditions of the MIT license, available at http://www.opensource.org/licenses/mit-license.php
  *
  * ARIA Support: Greta Krafsig
- *
- * Project: https://github.com/CodeSeven/toastr
+ * Dependency Removing Supprt: Ryan Baseman
+ * 
+ * Original Project: https://github.com/CodeSeven/toastr
+ * No dependency Toastr: https://github.com/ryibas/toastr
  */
 /* global define */
 (function (define) {
@@ -112,6 +114,8 @@
             function remove(toastElement) {
                 var options = getOptions();
                 if (!toastContainer) { getContainer(options); }
+                console.log('remove');
+                console.log(document.activeElement);
                 if (toastElement && $(':focus', toastElement).length === 0) {
                     removeToast(toastElement);
                     return;
@@ -162,17 +166,7 @@
                     containerId: 'toast-container',
                     debug: false,
 
-                    showMethod: 'fadeIn', //fadeIn, slideDown, and show are built into jQuery
-                    showDuration: 300,
-                    showEasing: 'swing', //swing and linear are built into jQuery
-                    onShown: undefined,
-                    hideMethod: 'fadeOut',
-                    hideDuration: 1000,
-                    hideEasing: 'swing',
                     onHidden: undefined,
-                    closeMethod: false,
-                    closeDuration: false,
-                    closeEasing: false,
                     closeOnHover: true,
 
                     extendedTimeOut: 1000,
@@ -220,11 +214,12 @@
                 toastContainer = getContainer(options, true);
 
                 var intervalId = null;
-                var toastElement = document.createElement('div'); // $('<div/>');
-                var titleElement = document.createElement('div'); // $('<div/>');
-                var messageElement = document.createElement('div'); // $('<div/>');
-                var progressElement = document.createElement('div'); // $('<div/>');
-                var closeElement = {}; // document.createElement(options.closeHtml); // TODO - not sure if this works $(options.closeHtml);
+                var toastElement = document.createElement('div'); 
+                var titleElement = document.createElement('div'); 
+                var messageElement = document.createElement('div');
+                var progressElement = document.createElement('div');
+                var closeElement = document.createElement('div'); //options.closeHtml); // TODO - not sure if this works $(options.closeHtml);
+                closeElement.innerHTML = options.closeHtml;
                 var progressBar = {
                     intervalId: null,
                     hideEta: null,
@@ -384,6 +379,8 @@
                 function setCloseButton() {
                     if (options.closeButton) {
                         closeElement.className += ' ' + options.closeClass;
+                        console.log('setCloseButton');
+                        console.log(closeElement);
                         closeElement.setAttribute('role', 'button');
                         toastElement.prepend(closeElement);
                     }
@@ -414,10 +411,7 @@
                 }
 
                 function hideToast(override) {
-                    var method = override && options.closeMethod !== false ? options.closeMethod : options.hideMethod;
-                    var duration = override && options.closeDuration !== false ?
-                        options.closeDuration : options.hideDuration;
-                    var easing = override && options.closeEasing !== false ? options.closeEasing : options.hideEasing;
+
                     if ($(':focus', toastElement).length && !override) {
                         return;
                     }
@@ -433,21 +427,6 @@
                     response.endTime = new Date();
                     publish(response);
                     return;
-
-                    // return toastElement[method]({
-                    //     duration: duration,
-                    //     easing: easing,
-                    //     complete: function () {
-                    //         removeToast(toastElement);
-                    //         clearTimeout(intervalId);
-                    //         if (options.onHidden && response.state !== 'hidden') {
-                    //             options.onHidden();
-                    //         }
-                    //         response.state = 'hidden';
-                    //         response.endTime = new Date();
-                    //         publish(response);
-                    //     }
-                    // });
                 }
 
                 function delayedHideToast() {
@@ -461,9 +440,7 @@
                 function stickAround() {
                     clearTimeout(intervalId);
                     progressBar.hideEta = 0;
-                    toastElement.stop(true, true)[options.showMethod](
-                        {duration: options.showDuration, easing: options.showEasing}
-                    );
+                    toastElement.stop(true, true); // TODO - stop isn't a good method
                 }
 
                 function updateProgress() {
