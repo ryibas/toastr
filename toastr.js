@@ -56,7 +56,6 @@
             function getContainer(options, create) {
                 if (!options) { options = getOptions(); }
 
-                console.log(options);
                 toastContainer = document.getElementById(options.containerId);
 
                 if (toastContainer) {
@@ -125,20 +124,21 @@
             // internal functions
 
             function clearContainer (options) {
-                var toastsToClear = toastContainer.children();
+                
+                if (!toastContainer.hasChildNodes()) {
+                    return;
+                }
+
+                var toastsToClear = toastContainer.childNodes;
                 for (var i = toastsToClear.length - 1; i >= 0; i--) {
-                    clearToast($(toastsToClear[i]), options);
+                    clearToast(toastsToClear[i], options);
                 }
             }
 
             function clearToast (toastElement, options, clearOptions) {
                 var force = clearOptions && clearOptions.force ? clearOptions.force : false;
                 if (toastElement && (force || $(':focus', toastElement).length === 0)) {
-                    toastElement[options.hideMethod]({
-                        duration: options.hideDuration,
-                        easing: options.hideEasing,
-                        complete: function () { removeToast(toastElement); }
-                    });
+                    removeToast(toastElement);
                     return true;
                 }
                 return false;
@@ -237,8 +237,6 @@
                     options: options,
                     map: map
                 };
-
-                console.log('in notify');
 
                 personalizeToast();
 
@@ -423,21 +421,33 @@
                     if ($(':focus', toastElement).length && !override) {
                         return;
                     }
+
                     clearTimeout(progressBar.intervalId);
-                    return toastElement[method]({
-                        duration: duration,
-                        easing: easing,
-                        complete: function () {
-                            removeToast(toastElement);
-                            clearTimeout(intervalId);
-                            if (options.onHidden && response.state !== 'hidden') {
-                                options.onHidden();
-                            }
-                            response.state = 'hidden';
-                            response.endTime = new Date();
-                            publish(response);
-                        }
-                    });
+                    removeToast(toastElement);
+                    clearTimeout(intervalId);
+                    if (options.onHidden && response.state !== 'hidden') {
+                        options.onHidden();
+                    }
+
+                    response.state = 'hidden';
+                    response.endTime = new Date();
+                    publish(response);
+                    return;
+
+                    // return toastElement[method]({
+                    //     duration: duration,
+                    //     easing: easing,
+                    //     complete: function () {
+                    //         removeToast(toastElement);
+                    //         clearTimeout(intervalId);
+                    //         if (options.onHidden && response.state !== 'hidden') {
+                    //             options.onHidden();
+                    //         }
+                    //         response.state = 'hidden';
+                    //         response.endTime = new Date();
+                    //         publish(response);
+                    //     }
+                    // });
                 }
 
                 function delayedHideToast() {
@@ -468,12 +478,13 @@
 
             function removeToast(toastElement) {
                 if (!toastContainer) { toastContainer = getContainer(); }
-                if (toastElement.is(':visible')) {
+                if (toastElement.style.visibility == 'visible') {
                     return;
                 }
                 toastElement.remove();
                 toastElement = null;
-                if (toastContainer.children().length === 0) {
+                
+                if (!toastContainer.hasChildNodes()) {
                     toastContainer.remove();
                     previousToast = undefined;
                 }
