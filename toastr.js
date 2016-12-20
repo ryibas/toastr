@@ -55,9 +55,11 @@
 
             function getContainer(options, create) {
                 if (!options) { options = getOptions(); }
-                toastContainer = $('#' + options.containerId);
-                console.log(document.getElementById('toast-container'));
-                if (toastContainer.length) {
+
+                console.log(options);
+                toastContainer = document.getElementById(options.containerId);
+
+                if (toastContainer) {
                     return toastContainer;
                 }
                 if (create) {
@@ -143,11 +145,13 @@
             }
 
             function createContainer(options) {
-                toastContainer = $('<div/>')
-                    .attr('id', options.containerId)
-                    .addClass(options.positionClass);
 
-                toastContainer.appendTo($(options.target));
+                toastContainer = document.createElement('div');
+                toastContainer.id = options.containerId;
+                toastContainer.className += ' ' + options.positionClass;
+
+                document.querySelector(options.target).appendChild(toastContainer);
+
                 return toastContainer;
             }
 
@@ -216,11 +220,11 @@
                 toastContainer = getContainer(options, true);
 
                 var intervalId = null;
-                var toastElement = $('<div/>');
-                var titleElement = $('<div/>');
-                var messageElement = $('<div/>');
-                var progressElement = $('<div/>');
-                var closeElement = $(options.closeHtml);
+                var toastElement = document.createElement('div'); // $('<div/>');
+                var titleElement = document.createElement('div'); // $('<div/>');
+                var messageElement = document.createElement('div'); // $('<div/>');
+                var progressElement = document.createElement('div'); // $('<div/>');
+                var closeElement = {}; // document.createElement(options.closeHtml); // TODO - not sure if this works $(options.closeHtml);
                 var progressBar = {
                     intervalId: null,
                     hideEta: null,
@@ -233,6 +237,8 @@
                     options: options,
                     map: map
                 };
+
+                console.log('in notify');
 
                 personalizeToast();
 
@@ -282,13 +288,15 @@
                         default:
                             ariaValue = 'assertive';
                     }
-                    toastElement.attr('aria-live', ariaValue);
+                    toastElement.setAttribute('aria-live', ariaValue);
                 }
 
                 function handleEvents() {
-                    if (options.closeOnHover) {
-                        toastElement.hover(stickAround, delayedHideToast);
-                    }
+
+                    // TODO replace the .hover()
+                    // if (options.closeOnHover) {
+                    //     toastElement.hover(stickAround, delayedHideToast);
+                    // }
 
                     if (!options.onclick && options.tapToDismiss) {
                         toastElement.click(hideToast);
@@ -319,11 +327,12 @@
                 }
 
                 function displayToast() {
-                    toastElement.hide();
-
-                    toastElement[options.showMethod](
-                        {duration: options.showDuration, easing: options.showEasing, complete: options.onShown}
-                    );
+                    toastElement.style.display = 'block';
+                   
+                    // TODO animation goodies fadeIn
+                    // toastElement[options.showMethod](
+                    //     {duration: options.showDuration, easing: options.showEasing, complete: options.onShown}
+                    // );
 
                     if (options.timeOut > 0) {
                         intervalId = setTimeout(hideToast, options.timeOut);
@@ -337,7 +346,8 @@
 
                 function setIcon() {
                     if (map.iconClass) {
-                        toastElement.addClass(options.toastClass).addClass(iconClass);
+                        toastElement.className += ' ' + options.toastClass; 
+                        toastElement.className += ' ' + iconClass;
                     }
                 }
 
@@ -355,7 +365,7 @@
                         if (options.escapeHtml) {
                             suffix = escapeHtml(map.title);
                         }
-                        titleElement.append(suffix).addClass(options.titleClass);
+                        titleElement.append(suffix).className += ' ' + options.titleClass;
                         toastElement.append(titleElement);
                     }
                 }
@@ -366,28 +376,31 @@
                         if (options.escapeHtml) {
                             suffix = escapeHtml(map.message);
                         }
-                        messageElement.append(suffix).addClass(options.messageClass);
+
+                        messageElement.append(suffix);
+                        messageElement.className += ' ' + options.messageClass;
                         toastElement.append(messageElement);
                     }
                 }
 
                 function setCloseButton() {
                     if (options.closeButton) {
-                        closeElement.addClass(options.closeClass).attr('role', 'button');
+                        closeElement.className += ' ' + options.closeClass;
+                        closeElement.setAttribute('role', 'button');
                         toastElement.prepend(closeElement);
                     }
                 }
 
                 function setProgressBar() {
                     if (options.progressBar) {
-                        progressElement.addClass(options.progressClass);
+                        progressElement.className += ' ' + options.progressClass;
                         toastElement.prepend(progressElement);
                     }
                 }
 
                 function setRTL() {
                     if (options.rtl) {
-                        toastElement.addClass('rtl');
+                        toastElement.className += ' rtl';
                     }
                 }
 
