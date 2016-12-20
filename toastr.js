@@ -358,7 +358,8 @@
                         if (options.escapeHtml) {
                             suffix = escapeHtml(map.title);
                         }
-                        titleElement.append(suffix).className += ' ' + options.titleClass;
+                        titleElement.append(suffix);
+                        titleElement.className += ' ' + options.titleClass;
                         toastElement.append(titleElement);
                     }
                 }

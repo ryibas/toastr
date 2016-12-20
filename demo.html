@@ -126,24 +126,6 @@
                 </div>
             </div>
 
-            <div class="span2">
-                <div class="control-group">
-                    <div class="controls">
-                        <label class="control-label" for="showEasing">Show Easing</label>
-                        <input id="showEasing" type="text" placeholder="swing, linear" class="input-mini" value="swing" />
-
-                        <label class="control-label" for="hideEasing">Hide Easing</label>
-                        <input id="hideEasing" type="text" placeholder="swing, linear" class="input-mini" value="linear" />
-
-                        <label class="control-label" for="showMethod">Show Method</label>
-                        <input id="showMethod" type="text" placeholder="show, fadeIn, slideDown" class="input-mini" value="fadeIn" />
-
-                        <label class="control-label" for="hideMethod">Hide Method</label>
-                        <input id="hideMethod" type="text" placeholder="hide, fadeOut, slideUp" class="input-mini" value="fadeOut" />
-                    </div>
-                </div>
-            </div>
-
             <div class="span3">
                 <div class="control-group">
                     <div class="controls">
@@ -230,28 +212,24 @@
 
         document.getElementById('showtoast').onclick = function showToastClick() {
 
-            var shortCutFunction = document.querySelector('#toastTypeGroup input[checked]').value; // TODO - fix this... $("#toastTypeGroup input:radio:checked").val();
-            var msg = document.getElementById('message').value; // $('#message').val(); 'input[name = "gender"]:checked').
-            var title = document.getElementById('title').value; // $('#title').val() || '';
-            var $showDuration =  document.getElementById('showDuration'); // $('#showDuration');
-            var $hideDuration = document.getElementById('hideDuration'); //$('#hideDuration');
-            var $timeOut = document.getElementById('timeOut'); // $('#timeOut');
-            var $extendedTimeOut = document.getElementById('extendedTimeOut'); // $('#extendedTimeOut');
-            var $showEasing = document.getElementById('showEasing'); // $('#showEasing');
-            var $hideEasing = document.getElementById('hideEasing'); // $('#hideEasing');
-            var $showMethod = document.getElementById('showMethod'); // $('#showMethod');
-            var $hideMethod = document.getElementById('hideMethod'); // $('#hideMethod');
+            var shortCutFunction = document.querySelector('#toastTypeGroup input[type=radio]:checked').value;
+            var msg = document.getElementById('message').value;
+            var title = document.getElementById('title').value;
+            var $showDuration =  document.getElementById('showDuration');
+            var $hideDuration = document.getElementById('hideDuration');
+            var $timeOut = document.getElementById('timeOut');
+            var $extendedTimeOut = document.getElementById('extendedTimeOut');
             var toastIndex = toastCount++;
-            var addClear = document.getElementById('addClear').checked; // $('#addClear').prop('checked');
+            var addClear = document.getElementById('addClear').checked;
 
             toastr.options = {
-                closeButton: document.getElementById('closeButton').checked, // $('#closeButton').prop('checked'),
-                debug: document.getElementById('debugInfo').checked, // $('#debugInfo').prop('checked'),
-                newestOnTop: document.getElementById('newestOnTop').checked, // $('#newestOnTop').prop('checked'),
-                progressBar: document.getElementById('progressBar').checked, // $('#progressBar').prop('checked'),
-                rtl: document.getElementById('rtl').checked, // $('#rtl').prop('checked'),
-                positionClass: document.getElementById('positionGroup').checked, // TODO - fix this... $('#positionGroup input:radio:checked').val() || 'toast-top-right',
-                preventDuplicates: document.getElementById('preventDuplicates').checked, // $('#preventDuplicates').prop('checked'),
+                closeButton: document.getElementById('closeButton').checked,
+                debug: document.getElementById('debugInfo').checked,
+                newestOnTop: document.getElementById('newestOnTop').checked,
+                progressBar: document.getElementById('progressBar').checked,
+                rtl: document.getElementById('rtl').checked,
+                positionClass: document.querySelector('#positionGroup input[type=radio]:checked').value,
+                preventDuplicates: document.getElementById('preventDuplicates').checked,
                 onclick: null
             };
 
@@ -283,22 +261,6 @@
                 toastr.options.extendedTimeOut = addClear ? 0 : parseInt($extendedTimeOut.value);
             }
 
-            if ($showEasing.value.length) {
-                toastr.options.showEasing = $showEasing.value;
-            }
-
-            if ($hideEasing.value.length) {
-                toastr.options.hideEasing = $hideEasing.value;
-            }
-
-            if ($showMethod.value.length) {
-                toastr.options.showMethod = $showMethod.value;
-            }
-
-            if ($hideMethod.value.length) {
-                toastr.options.hideMethod = $hideMethod.value;
-            }
-
             if (addClear) {
                 msg = getMessageWithClearButton(msg);
                 toastr.options.tapToDismiss = false;
@@ -322,22 +284,23 @@
                 return;
             }
 
-            if ($toast.find('#okBtn').length) {
-                $toast.delegate('#okBtn', 'click', function () {
-                    alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
-                    $toast.remove();
-                });
-            }
-            if ($toast.find('#surpriseBtn').length) {
-                $toast.delegate('#surpriseBtn', 'click', function () {
-                    alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
-                });
-            }
-            if ($toast.find('.clear').length) {
-                $toast.delegate('.clear', 'click', function () {
-                    toastr.clear($toast, { force: true });
-                });
-            }
+            console.log($toast);
+//            if ($toast.find('#okBtn').length) {
+//                $toast.delegate('#okBtn', 'click', function () {
+//                    alert('you clicked me. i was toast #' + toastIndex + '. goodbye!');
+//                    $toast.remove();
+//                });
+//            }
+//            if ($toast.find('#surpriseBtn').length) {
+//                $toast.delegate('#surpriseBtn', 'click', function () {
+//                    alert('Surprise! you clicked me. i was toast #' + toastIndex + '. You could perform an action here.');
+//                });
+//            }
+//            if ($toast.find('.clear').length) {
+//                $toast.delegate('.clear', 'click', function () {
+//                    toastr.clear($toast, { force: true });
+//                });
+//            }
         }
 
         function getLastToast(){
