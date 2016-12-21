@@ -14,7 +14,7 @@
  */
 /* global define */
 (function (define) {
-    define(['jquery'], function ($) {
+    define([], function ($) {
         return (function () {
             var toastContainer;
             var listener;
@@ -106,6 +106,7 @@
             function clear(toastElement, clearOptions) {
                 var options = getOptions();
                 if (!toastContainer) { getContainer(options); }
+
                 if (!clearToast(toastElement, options, clearOptions)) {
                     clearContainer(options);
                 }
@@ -116,7 +117,7 @@
                 if (!toastContainer) { getContainer(options); }
                 console.log('remove');
                 console.log(document.activeElement);
-                if (toastElement && $(':focus', toastElement).length === 0) {
+                if (toastElement && toastElement.querySelector(':focus')) {
                     removeToast(toastElement);
                     return;
                 }
@@ -141,7 +142,8 @@
 
             function clearToast (toastElement, options, clearOptions) {
                 var force = clearOptions && clearOptions.force ? clearOptions.force : false;
-                if (toastElement && (force || $(':focus', toastElement).length === 0)) {
+                
+                if (toastElement && (force || toastElement.querySelector(':focus'))) {
                     removeToast(toastElement);
                     return true;
                 }
@@ -218,7 +220,7 @@
                 var titleElement = document.createElement('div'); 
                 var messageElement = document.createElement('div');
                 var progressElement = document.createElement('div');
-                var closeElement = document.createElement('div'); //options.closeHtml); // TODO - not sure if this works $(options.closeHtml);
+                var closeElement = document.createElement('div');
                 closeElement.innerHTML = options.closeHtml;
                 var progressBar = {
                     intervalId: null,
@@ -320,13 +322,6 @@
                 }
 
                 function displayToast() {
-                    toastElement.style.display = 'block';
-                   
-                    // TODO animation goodies fadeIn
-                    // toastElement[options.showMethod](
-                    //     {duration: options.showDuration, easing: options.showEasing, complete: options.onShown}
-                    // );
-
                     if (options.timeOut > 0) {
                         intervalId = setTimeout(hideToast, options.timeOut);
                         progressBar.maxHideTime = parseFloat(options.timeOut);
@@ -371,18 +366,18 @@
                             suffix = escapeHtml(map.message);
                         }
 
-                        messageElement.append(suffix);
+                        messageElement.innerHTML = suffix;
                         messageElement.className += ' ' + options.messageClass;
                         toastElement.append(messageElement);
                     }
                 }
 
                 function setCloseButton() {
+                    console.log('setclose');
+                    console.log(options.closeClass);
                     if (options.closeButton) {
-                        closeElement.className += ' ' + options.closeClass;
-                        console.log('setCloseButton');
-                        console.log(closeElement);
-                        closeElement.setAttribute('role', 'button');
+                        closeElement.childNodes[0].className += ' ' + options.closeClass;
+                        closeElement.childNodes[0].setAttribute('role', 'button');
                         toastElement.prepend(closeElement);
                     }
                 }
@@ -413,7 +408,7 @@
 
                 function hideToast(override) {
 
-                    if ($(':focus', toastElement).length && !override) {
+                    if (toastElement && toastElement.querySelector(':focus') && !override) {
                         return;
                     }
 
@@ -446,7 +441,7 @@
 
                 function updateProgress() {
                     var percentage = ((progressBar.hideEta - (new Date().getTime())) / progressBar.maxHideTime) * 100;
-                    progressElement.width(percentage + '%');
+                    progressElement.style.width = percentage + '%';
                 }
             }
 
@@ -456,9 +451,11 @@
 
             function removeToast(toastElement) {
                 if (!toastContainer) { toastContainer = getContainer(); }
+
                 if (toastElement.style.visibility == 'visible') {
                     return;
                 }
+
                 toastElement.remove();
                 toastElement = null;
                 
@@ -467,7 +464,6 @@
                     previousToast = undefined;
                 }
             }
-
         })();
     });
 }(typeof define === 'function' && define.amd ? define : function (deps, factory) {
