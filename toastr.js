@@ -7,14 +7,13 @@
  * conditions of the MIT license, available at http://www.opensource.org/licenses/mit-license.php
  *
  * ARIA Support: Greta Krafsig
- * Dependency Removing Supprt: Ryan Baseman
+ * Dependency Removing Support: Ryan Baseman
  * 
  * Original Project: https://github.com/CodeSeven/toastr
  * No dependency Toastr: https://github.com/ryibas/toastr
  */
-/* global define */
 var toastr = (function () {
-    return (function () {
+
         var toastContainer;
         var listener;
         var toastId = 0;
@@ -103,7 +102,6 @@ var toastr = (function () {
         }
 
         function clear(toastElement, clearOptions) {
-            
             var options = getOptions();
             if (!toastContainer) { getContainer(options); }
             
@@ -120,11 +118,11 @@ var toastr = (function () {
                 return;
             }
             if (toastContainer.children().length) {
-                toastContainer.remove();
+                toastContainer.parentNode.removeChild(toastContainer);
             }
         }
 
-        // internal functions
+        // private functions
 
         function clearContainer(options) {
 
@@ -148,7 +146,6 @@ var toastr = (function () {
         }
 
         function createContainer(options) {
-
             toastContainer = document.createElement('div');
             toastContainer.id = options.containerId;
             toastContainer.className += ' ' + options.positionClass;
@@ -285,17 +282,17 @@ var toastr = (function () {
 
             function handleEvents() {
 
-                // TODO replace the .hover()
-                // if (options.closeOnHover) {
-                //     toastElement.hover(stickAround, delayedHideToast);
-                // }
+                if (options.closeOnHover) {
+                    toastElement.onmouseover = stickAround;
+                    toastElement.onmouseout = delayedHideToast;
+                }
 
                 if (!options.onclick && options.tapToDismiss) {
-                    toastElement.click(hideToast);
+                    toastElement.onclick = hideToast;
                 }
 
                 if (options.closeButton && closeElement) {
-                    closeElement.click(function (event) {
+                    closeElement.onclick = function (event) {
                         if (event.stopPropagation) {
                             event.stopPropagation();
                         } else if (event.cancelBubble !== undefined && event.cancelBubble !== true) {
@@ -307,14 +304,14 @@ var toastr = (function () {
                         }
 
                         hideToast(true);
-                    });
+                    };
                 }
 
                 if (options.onclick) {
-                    toastElement.click(function (event) {
+                    toastElement.onclick = function (event) {
                         options.onclick(event);
                         hideToast();
-                    });
+                    };
                 }
             }
 
@@ -338,9 +335,9 @@ var toastr = (function () {
 
             function setSequence() {
                 if (options.newestOnTop) {
-                    toastContainer.prepend(toastElement);
+                    toastContainer.insertBefore(toastElement, toastContainer.childNodes[0]);
                 } else {
-                    toastContainer.append(toastElement);
+                    toastContainer.appendChild(toastElement);
                 }
             }
 
@@ -350,9 +347,10 @@ var toastr = (function () {
                     if (options.escapeHtml) {
                         suffix = escapeHtml(map.title);
                     }
-                    titleElement.append(suffix);
+
+                    titleElement.innerHTML += suffix;
                     titleElement.className += ' ' + options.titleClass;
-                    toastElement.append(titleElement);
+                    toastElement.appendChild(titleElement);
                 }
             }
 
@@ -365,7 +363,7 @@ var toastr = (function () {
 
                     messageElement.innerHTML = suffix;
                     messageElement.className += ' ' + options.messageClass;
-                    toastElement.append(messageElement);
+                    toastElement.appendChild(messageElement);
                 }
             }
 
@@ -373,14 +371,14 @@ var toastr = (function () {
                 if (options.closeButton) {
                     closeElement.childNodes[0].className += ' ' + options.closeClass;
                     closeElement.childNodes[0].setAttribute('role', 'button');
-                    toastElement.prepend(closeElement);
+                    toastElement.insertBefore(closeElement, toastElement.childNodes[0]);
                 }
             }
 
             function setProgressBar() {
                 if (options.progressBar) {
                     progressElement.className += ' ' + options.progressClass;
-                    toastElement.prepend(progressElement);
+                    toastElement.insertBefore(progressElement, toastElement.childNodes[0]);
                 }
             }
 
@@ -402,6 +400,7 @@ var toastr = (function () {
             }
 
             function hideToast(override) {
+                console.log('hideToast');
 
                 if (toastElement && toastElement.querySelector(':focus') && !override) {
                     return;
@@ -431,7 +430,6 @@ var toastr = (function () {
             function stickAround() {
                 clearTimeout(intervalId);
                 progressBar.hideEta = 0;
-                toastElement.stop(true, true); // TODO - stop isn't a good method
             }
 
             function updateProgress() {
@@ -451,11 +449,11 @@ var toastr = (function () {
                 return;
             }
 
-            toastElement.remove();
+            toastElement.parentNode.removeChild(toastElement);
             toastElement = null;
 
             if (!toastContainer.hasChildNodes()) {
-                toastContainer.remove();
+                toastContainer.parentNode.removeChild(toastContainer);
                 previousToast = undefined;
             }
         }
@@ -465,4 +463,3 @@ var toastr = (function () {
             return obj;
         }
     })();
-}());
